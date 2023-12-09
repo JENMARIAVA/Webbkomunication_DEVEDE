@@ -1,7 +1,7 @@
 
 
 import {db} from './firebaseConfig.js';
-import { getFirestore, collection, addDoc, getDocs,where,query, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 
 
@@ -24,11 +24,9 @@ async function postMoviesToFirebase(movie)
             await addDoc(moviesRef,movie);
             console.log('Movie added successfully!');  
         }
-       /**/ else{
+        else{
             console.log('This movie exist already!');
         }
-        
-          
     }catch (error){
         console.log(`ERROR: ${error}`);
     }
@@ -40,7 +38,7 @@ async function postMoviesToFirebase(movie)
         title: document.querySelector('#titlePost').value,
         genre: document.querySelector('#genre').value,
         releaseDate: document.querySelector('#releaseDate').value,
-        watched: false 
+        /*watched: false */ 
     };
     await postMoviesToFirebase(movie);
     
@@ -66,36 +64,129 @@ async function postMoviesToFirebase(movie)
 
 /**/getMoviesButton.addEventListener('click', async ()=>{
     console.log("Get Movies button clicked.");
-   /* const title=document.querySelector('#title').value;*/
+   
     const movies = await getMovies();
     displayMovies(movies);
 })
 
 
-function displayMovies(movies) {
-    console.log("Displaying movies...");
-    moviesElem.innerHTML = "";
-    movies.forEach((movie)=>{
-        const containerElem=document.createElement('article');
-        const headingElem = document.createElement('h3');
-        const textElem = document.createElement('p');
-        const removeButton = document.createElement('button');
-        const updateInput = document.createElement('input');
-        const updateButton = document.createElement('button');
 
-        headingElem.innerText=movie.title;
-        textElem.innerText = `Genre: ${movie.genre}, Release Date: ${movie.releaseDate}`;
+function createMovieElement(movie)
+{
+    const containerElem=document.createElement('article');
+    const headingElem = document.createElement('h3');
+    headingElem.addEventListener('click',async ()=>{
+        const watched= confirm(`Have you seen the "${movie.title}" movie? Click:
+        - OK for: Watched
+        - Cancel for: Not Watched`);
+        if (watched)
+        {
+            await haveWatched(movie.id, true);
+        }
+        else{
+            await haveWatched(movie.id, false);
+        }
+    })
 
+
+    const textElem1 = document.createElement('h4');
+    const textElem2 = document.createElement('h4');
+    const updateInputTitle = document.createElement('input');
+    updateInputTitle.addEventListener('input',()=>{
+        movie.title = updateInputTitle.value;
+    })
+    const updateInputGenre = document.createElement('input');
+    const updateInputReleaseDate = document.createElement('input');
+    const removeButton = document.createElement('button');
    
+    const updateButton = document.createElement('button');
 
-    containerElem.append(headingElem);
-    containerElem.append(textElem);
-    containerElem.append(removeButton);
-    moviesElem.append(containerElem);
+    headingElem.innerText=`Title: - ${movie.title} -`;
+    textElem1.innerText = `Genre: - ${movie.genre } -`;
+    textElem2.innerText = `ReleaseDate: - ${movie.releaseDate} -`;
+    updateInputTitle.setAttribute('placeholder', 'Enter Title')
+    updateInputTitle.setAttribute('id', 'updateInputTitle');
+    updateInputGenre.setAttribute('placeholder', 'Enter Genre');
+    updateInputGenre.setAttribute('id', 'updateInputGenre');
+    updateInputReleaseDate.setAttribute('placeholder', 'Enter ReleaseDate');
+    updateInputReleaseDate.setAttribute('id', 'updateInputReleaseDate');
+   
+    updateButton.innerText = 'Uppdate Movie';
+    removeButton.innerText = 'Delete Movie';
+
+
+containerElem.append(headingElem);
+containerElem.append(textElem1);
+containerElem.append(textElem2);
+containerElem.append(updateInputTitle);
+containerElem.append(updateInputGenre);
+containerElem.append(updateInputReleaseDate);
+
+/*containerElem.append(updateInput);*/
+containerElem.append(updateButton);
+containerElem.append(removeButton);
+moviesElem.append(containerElem);
+
+
+removeButton.addEventListener('click',()=> {
+    const movieId= movie.id;
+    deleteMovie(movieId);
+    containerElem.remove();
+ });
+ updateButton.addEventListener('click',async()=>{
+    /*const updatedMovie= emptyInputs();*/
+    const movieId = movie.id;
+    updateMovie(movie, movieId);
 });
 }
 
+function emptyInputs()
+{
+    const updatedMovie={}
+    if( updateInputTitle.value !=='')
+    {
+        updatedMovie.title=updateInputTitle.value;
+    }
+    if(  updateInputGenre.value !=='')
+    {
+        updatedMovie.genre = updateInputGenre.value;
+    }
+    if( updateInputReleaseDate.value !=='')
+    {
+        updatedMovie.releaseDate = updateInputReleaseDate.value;
+    }
+    return updatedMovie;
+}
 
+    function displayMovies(movies) {
+        console.log("Displaying movies...");
+        moviesElem.innerHTML = "";
+       
+            if (movies.length===0){
+                const containerElem=document.createElement('article');
+                const textElem3 = document.createElement('p');
+                textElem3.innerText = `There is no movies in database`;
+                containerElem.append(textElem3);
+                moviesElem.append(containerElem);
+            }
+            else
+            {   movies.forEach((movie)=>
+                { createMovieElement(movie)
+            });
+    }
+    }
+
+
+    async function haveWatched(movieId,status)
+    {
+        try{
+            const moviesRef = doc(collection(db, 'Movies'), movieId);
+            await updateDoc(moviesRef, { watched: status });
+         console.log("Watched status updated!");
+        }catch (error) {
+        console.error("Error updating watched status: ", error);
+    }
+    }
 
 
 async function deleteMovie(id){
@@ -109,26 +200,35 @@ async function deleteMovie(id){
     }
 }
 
+/*async function updateMovie(updatedMovie, id) {
+    try {
+        const moviesRef = doc(collection(db, 'Movies'), id);
+        await updateDoc(moviesRef, updatedMovie);
+        console.log("Movie Updated!");
+    } catch (error) {
+        console.error("Error updating movie: ", error);
+    }
+}*/
+async function updateMovie(updatedMovie, id) {
+    try {
+        const moviesRef = doc(collection(db, 'Movies'), id);
 
- removeButton.addEventListener('click',()=> {
-    const movieId= movie.id;
-    deleteMovie(movieId);
-    containerElem.remove();
- });
+        // Check if updatedMovie object has any valid fields
+        const hasUpdates = Object.values(updatedMovie).some((value) => {
+            return value !== undefined && value !== '';
+        });
 
-async function updateMovie(movieText, id)
-{
-    try{
-        const moviesRef = collection(db, 'Movies');
-        await updateDoc(moviesRef,{movie: movieText});
-        console.log("Movie Updated!")
-    }catch(error){
+        if (hasUpdates) {
+            await updateDoc(moviesRef, updatedMovie);
+            console.log("Movie Updated!");
+        } else {
+            console.log("No valid updates found.");
+        }
+    } catch (error) {
         console.error("Error updating movie: ", error);
     }
 }
 
-updateButton.addEventListener('click',()=>{
-    const movieText=updateInput.value;
-    const movieId= movie.id;
-    updateMovie(movieText,movieId);
-});
+
+
+
