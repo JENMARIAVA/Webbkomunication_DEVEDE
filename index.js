@@ -75,19 +75,24 @@ function createMovieElement(movie)
 {
     const containerElem=document.createElement('article');
     const headingElem = document.createElement('h3');
+    const watched= movie.watched? 'watched' : 'Not watched';
+
     headingElem.addEventListener('click',async ()=>{
-        const watched= confirm(`Have you seen the "${movie.title}" movie? Click:
+        const confirmed= confirm(`Have you seen the "${movie.title}" movie? Click:
         - OK for: Watched
         - Cancel for: Not Watched`);
-        if (watched)
+        if (confirmed)
         {
             await haveWatched(movie.id, true);
+            movie.watched= true;
         }
         else{
             await haveWatched(movie.id, false);
+            movie.watched= false;
         }
-    })
+    });
 
+    headingElem.innerText = `Title: ${movie.title} - ${watched}`;
 
     const textElem1 = document.createElement('h4');
     const textElem2 = document.createElement('h4');
@@ -127,6 +132,8 @@ containerElem.append(updateButton);
 containerElem.append(removeButton);
 moviesElem.append(containerElem);
 
+containerElem.append(watched);
+
 
 removeButton.addEventListener('click',()=> {
     const movieId= movie.id;
@@ -136,7 +143,7 @@ removeButton.addEventListener('click',()=> {
  updateButton.addEventListener('click',async()=>{
     /*const updatedMovie= emptyInputs();*/
     const movieId = movie.id;
-    updateMovie(movie, movieId);
+    updateData(movieId,  updateInputTitle.value, updateInputGenre.value, updateInputReleaseDate.value);
 });
 }
 
@@ -209,11 +216,11 @@ async function deleteMovie(id){
         console.error("Error updating movie: ", error);
     }
 }*/
-async function updateMovie(updatedMovie, id) {
+/*async function updateMovie(updatedMovie, id) {
     try {
         const moviesRef = doc(collection(db, 'Movies'), id);
 
-        // Check if updatedMovie object has any valid fields
+       
         const hasUpdates = Object.values(updatedMovie).some((value) => {
             return value !== undefined && value !== '';
         });
@@ -226,8 +233,35 @@ async function updateMovie(updatedMovie, id) {
         }
     } catch (error) {
         console.error("Error updating movie: ", error);
+    }*/
+
+// Modify updateMovie function
+/*async function updateMovie(movieId, status) {
+    try {
+        const moviesRef = doc(collection(db, 'Movies'), movieId);
+        await updateDoc(moviesRef, { watched: status });
+        console.log('Movie updated!');
+    } catch (error) {
+        console.error('Error updating movie: ', error);
     }
+}*/
+
+function updateData(movieId, updatedTitle, updatedGenre, updatedReleaseDate){
+    const movieRef = doc(db, 'Movies', movieId);
+
+    updateDoc(movieRef, {
+        title: updatedTitle,
+        genre: updatedGenre,
+        releaseDate: updatedReleaseDate
+    })
+    .then(() => {
+        alert("Update successful");
+    })
+    .catch((error) => {
+        alert("Error: " + error);
+    });
 }
+
 
 
 
