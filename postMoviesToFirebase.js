@@ -7,18 +7,26 @@ const moviesElem=document.querySelector('#movies')
 async function postMoviesToFirebase(movie)
 {
     try{
+        console.log('Attempting to add movie to Firebase:', movie);
+
         const moviesRef = collection(db, 'Movies');
         const moviesSnapshot = await getDocs(moviesRef);
         const movies = [];
-        moviesSnapshot.forEach((doc)=>{
+        moviesSnapshot.forEach((doc) => {
             movies.push(doc.data().title.toLowerCase());
         });
+       
+        const movieTitle = movie.title.trim().toLowerCase();
+       
+        const isTitleEmpty = movieTitle === '';
+        if(isTitleEmpty)
+         {  alert('Fill in the input with a movie title');
+            console.log('Fill in the input with a movie title');
+         return; }
         
-        const movieTitle= movie.title.toLowerCase();
-        if(!movies.includes(movieTitle)){
+        if (!movies.includes(movieTitle)){
             await addDoc(moviesRef,movie);
-            console.log('Movie added successfully!');  
-        }
+            console.log('Movie added successfully!');} 
         else{ 
                 const containerElem=document.createElement('article');
                 const textElem3 = document.createElement('p');

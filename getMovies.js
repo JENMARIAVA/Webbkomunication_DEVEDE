@@ -52,7 +52,8 @@ function createMovieElement(movie)
 {
     const containerElem=document.createElement('article');
     const headingElem = document.createElement('h3');
-    const watched= movie.watched? 'watched' : 'Not watched';
+    
+    const watched= movie.watched? '_status_:watched' : '_status_:Not watched';
 
     headingElem.addEventListener('click',async ()=>{
         const confirmed= confirm(`Have you seen the "${movie.title}" movie? Click:
@@ -89,24 +90,26 @@ function createMovieElement(movie)
     containerElem.append(removeButton);
     moviesElem.append(containerElem);
     containerElem.append(watched);
+   
+    
     removeButton.addEventListener('click',()=> {
         const movieId= movie.id;
         deleteMovie(movieId);
         containerElem.remove();
      });
-}
-
-
-async function deleteMovie(id){
-    
-    try{
-        const moviesRef = collection(db, 'Movies');
-        await deleteDoc(doc(moviesRef,id));
-        console.log("Movie deleted succesfully");
-    } catch(error){
-        console.error("Error deleting movie: ", error);
     }
-}
+
+    async function deleteMovie(movieId){
+    
+        try{
+            const moviesRef = collection(db, 'Movies');
+            await deleteDoc(doc(moviesRef,movieId));
+            console.log("Movie deleted succesfully");
+        } catch(error){
+            console.error("Error deleting movie: ", error);
+        }
+    }
+
 
 
 async function haveWatched(movieId,status)
@@ -129,6 +132,11 @@ searchButton.addEventListener('click', async () => {
     if (searchTerm !== '') {
         await searchMoviesByTitle(searchTerm);
     } else {
+        const containerElem=document.createElement('article');
+        const textElem3 = document.createElement('p');
+        textElem3.innerText = `Please enter a title to search`;
+        containerElem.append(textElem3);
+        moviesElem.append(containerElem);
         console.log('Please enter a title to search.');
     }
 });
@@ -162,4 +170,4 @@ async function searchMoviesByTitle(title) {
 }
 
 
-export{getMoviesButton, getMovies, moviesElem, displayMovies, createMovieElement, haveWatched,  searchMoviesByTitle, searchButton, searchInput}
+export{getMoviesButton, getMovies, moviesElem, displayMovies,createMovieElement,  haveWatched,  searchMoviesByTitle, searchButton, searchInput}

@@ -3,36 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>DE-VE-DE</title>
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
     
-    <section>
-        <h1>DE-VE-DE</h1>
-        <h2>Search a movie below: </h2>
+    <section class="container">
+        <div class="header">
+            <h1>DE-VE-DE</h1>
+        </div>
+        <section class="main">
         <div>
+            <h2>Search a movie below: </h2>
             <input type="text" id="searchTitle" placeholder="Search by title">
             <button id="searchButton">Search</button>
         </div>
-        <h2>Add a new movie below: </h2>
+        <section class="add">
+            <h2>Add a new movie below: </h2>
+            <input type="text" id="titlePost" placeholder= "Title" />
         
-        <input type="text" id="titlePost" placeholder= "Title" />
-        
-        <input type="text" id="genre"  placeholder= "Genre" />
-        <label>Release Date</label>
-        <input type="date" id="releaseDate"/>
-        <div> 
+            <input type="text" id="genre"  placeholder= "Genre" />
+           
+            <label for="releaseDate">Release Date:</label>
+
+            <input type="date" id="releaseDate"/>
             <button id="postMoviesButton">Save Movie</button>
-        </div>
-        <section>
-            <h3>Movies availiable on DE-VE-DE</h3>
+        </section>
+        </section>
+        <section class="movies">
+            <h2>Movies availiable on DE-VE-DE</h2>
             <button id="getMoviesButton">Get the List of the DE-VE-DE Movies</button>
             <section id="movies"></section>
         </section>
     </section>
     
     <script type="module" src="index.js"></script>
-    <script type="module" src="postMoviesToFirebase.js"></script>
+    
 
 </body>
 </html>

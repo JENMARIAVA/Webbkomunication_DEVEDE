@@ -5,8 +5,8 @@ import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "https://
 
 import { postMoviesToFirebase, postMoviesButton } from './postMoviesToFirebase.js';
 postMoviesToFirebase, postMoviesButton 
-import{getMoviesButton, getMovies, moviesElem, displayMovies, createMovieElement, haveWatched,  searchMoviesByTitle, searchButton, searchInput} from './getMovies.js';
-getMoviesButton, getMovies, moviesElem, displayMovies, createMovieElement, haveWatched,  searchMoviesByTitle, searchButton, searchInput;
+import{getMoviesButton, getMovies, moviesElem, displayMovies,createMovieElement,  haveWatched,  searchMoviesByTitle, searchButton, searchInput} from './getMovies.js';
+getMoviesButton, getMovies, moviesElem, displayMovies,createMovieElement, haveWatched,  searchMoviesByTitle, searchButton, searchInput;
 
 
 
