@@ -1,6 +1,7 @@
+
 body{
     margin:100px;
-    color: #dc2f2f;
+    color:#2c2d34;
     background-color: #ff9a3c;
     display: flex;
     justify-content: center;
@@ -10,22 +11,29 @@ body{
     background-repeat: no-repeat;
     background-position: center center;
     height: 100vh; 
+   
+  
 }
 .container{
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
     width:600px;
-    backdrop-filter: blur(10px);
+
+    
 }
 input{
     font-family: cursive;
     height: 30px;
     margin: 3px 0;
+   
 }
 .movies{
    display: grid;
    grid-template-rows: repeat(3,100px);
+   grid-template-columns: auto;
+  
+   
 }
 .header{
     font-size: large;
@@ -36,25 +44,67 @@ input{
     justify-content: space-around; 
     align-items: flex-start; 
     gap: 20px; 
+  
 }
 #getMoviesButton, #postMoviesButton,#searchButton{
     height:25px;
     border:none;
     outline: none;
     border-radius: 40px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+    color: #dc2f2f;
+    background:#f5f4e8; 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 2);
     cursor: pointer;
     font-size: 16px;
     font-weight: 600;
     font-family: cursive;
 }
+#searchButton{
+    width:max-content;
+}
+
+#getMoviesButton:hover{
+
+    background-color:#2c2d34;;
+    color:#ff9a3c;
+    font-size: x-large;
+ }
+  #postMoviesButton:hover{
+
+    background-color:#2c2d34;
+    color:#ff9a3c;
+    font-size: x-large;
+ }
+  #searchButton:hover{
+
+    background-color:#2c2d34;
+    color:#ff9a3c;
+ }
+
+
 .add{
     display: flex;
     flex-direction: column;
 }
 #postMoviesButton{
-    grid-column:1 /span3;
-    grid-row: 2 /span 2;
+    width:150px;
+    height:50px; 
+    align-self: center; 
+    font-size: 14px; 
+    margin:10px;
+}
+
+.getMoviesButton{
+    display: flex;
+    justify-content: center;
+}
+
+#getMoviesButton{
+    width:200px;
+    height:100px; 
+    font-size: 20px; 
+    align-self: center;
+   
 }
 
 #movies {
@@ -62,10 +112,12 @@ input{
   grid-template-columns: repeat(2, 1fr); 
   gap: 20px;
  
+ 
+ 
 }
 
 article {
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color:#f5f4e8;
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
@@ -78,11 +130,17 @@ article h3 {
 }
 
 article button {
-    background-color: #dc2f2f;
-    color: white;
+    background-color:#2c2d34;
+    color:#ff9a3c;
     border: none;
     border-radius: 5px;
     padding: 10px 20px;
     cursor: pointer;
     font-family: cursive;
+}
+
+article button:hover{
+    background-color: #dc2f2f;
+    color:#f5f4e8;
+    font-size: large;
 }

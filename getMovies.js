@@ -1,28 +1,24 @@
 //denna module fokuserar med att hämta , visa, och hantera filmer från firestore database
-// dessutom här finns function med alla movie elementer som  är skapade med javascript (append method),
-// och functionen som söker filmer med specifik titel i databasen.
+// dessutom här finns function med alla movie elementer och function som uppdaterar status watched eller notwatched,
+// plus function som söker filmer med specifik titel i databasen.
 
 import { db } from './firebaseConfig.js';
 import { collection, getDocs, doc, updateDoc,deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-
-
 const getMoviesButton=document.querySelector('#getMoviesButton');
-const moviesElem=document.querySelector('#movies')
+const moviesElem=document.querySelector('#movies');
 
 async function getMovies(){
-    console.log("Fetching movies from Firestore...");
     try {    
         const moviesRef = collection(db, 'Movies');
-        const querySnapshot = await getDocs(moviesRef);
+        const moviesSnapshot = await getDocs(moviesRef);
         const movies = [];
-            querySnapshot.forEach((doc)=>{
-          
+
+            moviesSnapshot.forEach((doc)=>{
             movies.push({ id: doc.id, ...doc.data() });
         });
             return movies;
-        }catch(error)
-        {
+        }catch(error){
             console.log( `ERROR: ${error}`);
         }
 }
@@ -31,6 +27,7 @@ getMoviesButton.addEventListener('click', async ()=>{
     console.log("Get Movies button clicked.");
     const movies = await getMovies();
     displayMovies(movies);
+    clearInputs();
 });
 
 function displayMovies(movies) {
@@ -44,8 +41,7 @@ function displayMovies(movies) {
             containerElem.append(textElem3);
             moviesElem.append(containerElem);
         }
-        else
-        {  
+        else{  
              movies.forEach((movie)=>{createMovieElement(movie)});
         }
 }
@@ -64,20 +60,23 @@ function createMovieElement(movie)
         - OK for: Watched
         - Cancel for: Not Watched`);
         if (confirmed){
-            await haveWatched(movie.id, true);
+            await statusWatched(movie.id, true);
             movie.watched= true;
+            alert('Updated movie status! Click Get Movies to refresh.');
         }
         else{
-            await haveWatched(movie.id, false);
+            await statusWatched(movie.id, false);
             movie.watched= false;
+            alert('Updated movie status! Click Get Movies to refresh.');
         }
     });
 
-    headingElem.innerText = `Title: ${movie.title} - ${watched}`;
+   
     headingElem.innerText=`Title: - ${movie.title} -`;
     textElem1.innerText = `Genre: - ${movie.genre } -`;
     textElem2.innerText = `ReleaseDate: - ${movie.releaseDate} -`;
     removeButton.innerText = 'Delete Movie';
+    /*headingElem.innerText = `Title: ${movie.title} - ${watched}`;*/
 
     containerElem.append(headingElem);
     containerElem.append(textElem1);
@@ -105,25 +104,28 @@ async function deleteMovie(movieId){
         }
 }
 
-async function haveWatched(movieId,status){
+async function statusWatched(movieId,status){
     try {
         const moviesRef = doc(collection(db, 'Movies'), movieId);
         await updateDoc(moviesRef, { watched: status });
         console.log("Watched status updated!");
         }
         catch (error) {
-        console.error("Error updating watched status: ", error);
+        console.log("Error updating watched status: ", error);
         }
 }
 
 
 const searchButton = document.querySelector('#searchButton');
-const searchInput = document.querySelector('#searchTitle');
+let searchInput = document.querySelector('#searchTitle');
 
 searchButton.addEventListener('click', async () => {
-    const searchTerm = searchInput.value.trim().toLowerCase();
-    if (searchTerm !== '') {
-        await searchMoviesByTitle(searchTerm);
+    const searchMovie = searchInput.value.trim().toLowerCase();
+    
+    if (searchMovie !== '') {
+        await searchMoviesByTitle(searchMovie);
+        
+        
     } 
     else {
         const containerElem=document.createElement('article');
@@ -132,15 +134,18 @@ searchButton.addEventListener('click', async () => {
         containerElem.append(textElem3);
         moviesElem.append(containerElem);
         console.log('Please enter a title to search.');
-    }});
+    
+    }
+   
+});
 
 async function searchMoviesByTitle(title) {
     try {
         const moviesRef = collection(db, 'Movies');
-        const querySnapshot = await getDocs(moviesRef);
+        const moviesSnapshot = await getDocs(moviesRef);
         const matchingMovies = [];
 
-        querySnapshot.forEach((doc) => {
+        moviesSnapshot.forEach((doc) => {
             const movieData = doc.data();
             if (movieData.title.toLowerCase().includes(title)) {
                 matchingMovies.push({ id: doc.id, ...movieData });
@@ -148,6 +153,7 @@ async function searchMoviesByTitle(title) {
 
             if (matchingMovies.length > 0) {
                 displayMovies(matchingMovies);
+                clearInputs();
             } 
             else {
                 const containerElem=document.createElement('article');
@@ -156,13 +162,19 @@ async function searchMoviesByTitle(title) {
                 containerElem.append(textElem3);
                 moviesElem.append(containerElem);
                 console.log('No movies found with that title.');
+          
             }
+            clearInputs();
         } 
         catch (error) {
         console.log(`Error searching for movies: ${error}`);
         }
 }
 
+
+function clearInputs(){
+    searchInput.value='';
+}
 export{ getMoviesButton, getMovies, moviesElem, displayMovies,
-        createMovieElement, haveWatched, searchMoviesByTitle,
+        createMovieElement, statusWatched, searchMoviesByTitle,
         searchButton, searchInput};

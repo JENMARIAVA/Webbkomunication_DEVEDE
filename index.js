@@ -7,12 +7,12 @@ import{ getMoviesButton,
         moviesElem, 
         displayMovies,
         createMovieElement, 
-        haveWatched,  
+        statusWatched,  
         searchMoviesByTitle,
         searchButton, 
         searchInput} from './getMovies.js';
 getMoviesButton, getMovies, moviesElem,
-displayMovies,createMovieElement, haveWatched, 
+displayMovies,createMovieElement, statusWatched, 
 searchMoviesByTitle, searchButton, searchInput;
 
 

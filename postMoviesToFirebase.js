@@ -6,11 +6,10 @@ import { collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/
 
 
 const postMoviesButton= document.querySelector('#postMoviesButton');
-const moviesElem=document.querySelector('#movies')
-
+const moviesElem=document.querySelector('#movies');
+let saveFilmInputs= document.querySelectorAll('input');
 async function postMoviesToFirebase(movie){
     try{
-        console.log('Attempting to add movie to Firebase:', movie);
         const moviesRef = collection(db, 'Movies');
         const moviesSnapshot = await getDocs(moviesRef);
         const movies = [];
@@ -44,6 +43,11 @@ async function postMoviesToFirebase(movie){
     }
 }
 
+function resetInputs(){
+    saveFilmInputs.forEach(input=>{
+        input.value= '';});
+}
+
 postMoviesButton.addEventListener('click',async ()=> {
     console.log("Post Movies button clicked.");
     const movie= {
@@ -52,6 +56,8 @@ postMoviesButton.addEventListener('click',async ()=> {
         releaseDate: document.querySelector('#releaseDate').value,
     };
     await postMoviesToFirebase(movie);
+    resetInputs();
+ 
 });
 
 export { postMoviesToFirebase, postMoviesButton,moviesElem };
